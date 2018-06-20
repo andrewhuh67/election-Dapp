@@ -2,7 +2,7 @@ App = {
   web3Provider: null,
   contracts: {},
   account: '0x0',
-  hasVoted: false,
+  // hasVoted: false,
 
   
   init: function() {
@@ -29,25 +29,25 @@ App = {
 
       App.contracts.Election.setProvider(App.web3Provider);
 
-      App.listenForEvents();
+      // App.listenForEvents();
 
       return App.render();
     })
 
   },
 
-  listenForEvents: function() {
-    App.contracts.Election.deployed().then(function(instance){
-      instance.votedEvent({}, {
-        fromBlock: 0,
-        toBlock: 'latest'
-      }).watch(function(error, event){
-        console.log("event triggered", event)
+  // listenForEvents: function() {
+  //   App.contracts.Election.deployed().then(function(instance){
+  //     instance.votedEvent({}, {
+  //       fromBlock: 0,
+  //       toBlock: 'latest'
+  //     }).watch(function(error, event){
+  //       console.log("event triggered", event)
 
-        App.render();
-      });
-    });
-  },
+  //       App.render();
+  //     });
+  //   });
+  // },
 
   render: function(){
     var electionInstance;
@@ -71,42 +71,44 @@ App = {
       var candidatesResults = $("#candidatesResults");
       candidatesResults.empty();
 
-      var candidatesSelect = $('#candidatesSelect');
-      candidatesSelect.empty();
+      // var candidatesSelect = $('#candidatesSelect');
+      // candidatesSelect.empty();
 
-      for (var i = 1; i <= canddidatesCount; i++){
-        electionInstance.candidates(i).then(function(candidates){
+      for (var i = 1; i <= candidatesCount; i++){
+        electionInstance.candidates(i).then(function(candidate){
+          console.log(candidate)
+          console.log("something here")
           var id = candidate[0];
           var name = candidate[1];
           var voteCount = candidate[2];
 
           var candidateTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + voteCount + "</td></tr>"
-          candidatesSelect.append(candidateOption);
+          candidatesResults.append(candidateTemplate);
         });
       }
-      return electionInstance.voters(app.account);
-    }).then(function(hasVoted){
-      if(hasVoted){
-        $('form').hide();
-      }
+      // return electionInstance.voters(app.account);
+    // }).then(function(hasVoted){
+    //   if(hasVoted){
+    //     $('form').hide();
+    //   }
       loader.hide();
       content.show();
     }).catch(function(error){
       console.warn(error);
     });
-  },
-
-  castVote: function(){
-    var candidateId = $('#candidatesSelect').val();
-    App.contracts.Election.deployed().then(function(instance){
-      return instance.vote(candidateId, { from: App.account });
-    }).then(function(result){
-      $("#content").hide()
-      $("#loader").show()
-    }).catch(function(err){
-      console.error(err);
-    });
   }
+
+//   castVote: function(){
+//     var candidateId = $('#candidatesSelect').val();
+//     App.contracts.Election.deployed().then(function(instance){
+//       return instance.vote(candidateId, { from: App.account });
+//     }).then(function(result){
+//       $("#content").hide()
+//       $("#loader").show()
+//     }).catch(function(err){
+//       console.error(err);
+//     });
+//   }
 };
 
 $(function() {
